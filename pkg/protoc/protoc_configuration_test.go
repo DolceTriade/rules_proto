@@ -53,7 +53,7 @@ func TestMergeSources(t *testing.T) {
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			srcs, mappings := mergeSources(tc.workDir, tc.rel, tc.plugins)
+			srcs, mappings := mergeSources(tc.workDir, tc.rel, tc.plugins, "")
 			if len(tc.wantOutputs) != len(srcs) {
 				t.Fatalf("srcs: want %d, got %d", len(tc.wantOutputs), len(srcs))
 			}
