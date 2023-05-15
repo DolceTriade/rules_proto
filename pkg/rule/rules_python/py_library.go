@@ -79,10 +79,24 @@ func (s *PyLibrary) Rule(otherGen ...*rule.Rule) *rule.Rule {
 	return newRule
 }
 
+func pyFilenameToImport(s string) string {
+	if strings.HasSuffix(s, ".py") {
+		return strings.ReplaceAll(s[:len(s)-3], "/", ".")
+	}
+	return s
+}
+
 // Imports implements part of the RuleProvider interface.
 func (s *PyLibrary) Imports(c *config.Config, r *rule.Rule, file *rule.File) []resolve.ImportSpec {
 	if lib, ok := r.PrivateAttr(protoc.ProtoLibraryKey).(protoc.ProtoLibrary); ok {
-		return protoc.ProtoLibraryImportSpecsForKind(r.Kind(), lib)
+		imps := protoc.ProtoLibraryImportSpecsForKind(r.Kind(), lib)
+		from := label.New("", file.Pkg, r.Name())
+		for _, o := range s.Outputs {
+			pyImp := pyFilenameToImport(o)
+			protoc.GlobalResolver().Provide("py", "py", pyImp, from)
+			imps = append(imps, resolve.ImportSpec{Lang: "py", Imp: pyImp})
+		}
+		return imps
 	}
 	return nil
 }
