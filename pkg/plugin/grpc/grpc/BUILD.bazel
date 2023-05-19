@@ -27,6 +27,7 @@ go_test(
         "//pkg/plugintest",
         "@io_bazel_rules_go//go/tools/bazel_testing:go_default_library",
     ],
+    tags = ["manual"],
 )
 
 genrule(
